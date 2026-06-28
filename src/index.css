@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-midnight: #030712;
+  --color-cardDark: #0b1021;
+  --color-accentBlue: #3b82f6;
+  --color-accentSky: #38bdf8;
+  --color-textSecondary: #90a3c7;
+  --color-borderDark: #1e293b;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-heading: 'Bricolage Grotesque', sans-serif;
+}
+
+@utility glassmorphism {
+  background: rgba(11, 16, 33, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@utility glassmorphism-hover {
+  &:hover {
+    background: rgba(11, 16, 33, 0.65);
+    border-color: rgba(56, 189, 248, 0.25);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: #030712;
+  }
+  
+  body {
+    @apply bg-midnight text-white antialiased overflow-x-hidden font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  .timeline-dot-active::before {
+    box-shadow: 0 0 15px #38bdf8;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* 3D Perspective Card Layout */
+.perspective-card {
+  perspective: 1000px;
+}
+
+.tilt-inner {
+  transition: transform 0.15s ease-out;
+  transform-style: preserve-3d;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.translate-z-20 {
+  transform: translateZ(20px);
+}
+
+.translate-z-40 {
+  transform: translateZ(40px);
+}
+
+/* Timeline vertical line reveal */
+.timeline-line {
+  transform-origin: top;
+  transition: transform 1s ease-out;
+}
+
+/* Infinite Scrolling Marquee */
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: marquee-left 32s linear infinite;
+}
+
+.animate-marquee-right {
+  display: flex;
+  width: max-content;
+  animation: marquee-right 32s linear infinite;
+}
