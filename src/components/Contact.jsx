@@ -1,50 +1,65 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { FiMail, FiPhone, FiLinkedin, FiGithub, FiInstagram, FiDownload } from 'react-icons/fi';
+import heroImg from '../assets/hero.png';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Contact() {
   const containerRef = useRef();
-  const formRef = useRef();
-  const infoRef = useRef();
+  const cardRef = useRef();
   
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Reveal Form
-      gsap.fromTo(formRef.current,
-        { opacity: 0, x: -30 },
+      // Reveal the large glass card on scroll
+      gsap.fromTo(cardRef.current,
+        { opacity: 0, y: 50, scale: 0.96, filter: 'blur(10px)' },
         {
           opacity: 1,
-          x: 0,
-          duration: 0.8,
+          y: 0,
+          scale: 1,
+          filter: 'blur(0px)',
+          duration: 1,
           scrollTrigger: {
             trigger: containerRef.current,
             start: 'top 80%',
             end: 'top 40%',
-            scrub: 1,
+            scrub: true,
           }
         }
       );
 
-      // Reveal Info
-      gsap.fromTo(infoRef.current,
-        { opacity: 0, x: 30 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.8,
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 80%',
-            end: 'top 40%',
-            scrub: 1,
-          }
-        }
-      );
+      // Magnetic hover effects for contact item tags
+      const items = cardRef.current.querySelectorAll('.magnetic-social');
+      items.forEach(item => {
+        item.addEventListener('mousemove', (e) => {
+          const rect = item.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          
+          gsap.to(item, {
+            x: x * 0.3,
+            y: y * 0.3,
+            scale: 1.05,
+            duration: 0.3,
+            ease: 'power2.out'
+          });
+        });
+        
+        item.addEventListener('mouseleave', () => {
+          gsap.to(item, {
+            x: 0,
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: 'elastic.out(1, 0.3)'
+          });
+        });
+      });
     }, containerRef);
 
     return () => ctx.revert();
@@ -56,7 +71,7 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Thank you, ${formData.name}! Your message was simulated successfully.`);
+    alert(`Thank you for reaching out, ${formData.name}! I will get back to you soon.`);
     setFormData({ name: '', email: '', message: '' });
   };
 
@@ -68,166 +83,223 @@ export default function Contact() {
   };
 
   return (
-    <section ref={containerRef} id="contact" className="py-24 px-6 relative border-t border-white/5">
-      <div className="max-w-4xl mx-auto w-full">
+    <section ref={containerRef} id="contact" className="py-32 px-6 relative bg-transparent overflow-hidden">
+      
+      {/* Background radial overlay */}
+      <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-white/[0.01] rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="max-w-5xl mx-auto w-full relative z-10">
         
         {/* Section Heading */}
-        <div className="mb-16">
-          <span className="font-serif italic text-xl text-accentSky block mb-2">06. Connection</span>
-          <h2 className="font-heading font-bold text-4xl md:text-5xl text-white tracking-tight">
+        <div className="mb-20">
+          <span className="font-serif italic text-xl text-white/50 block mb-3">07. Connection</span>
+          <h2 className="font-heading font-extrabold text-4xl md:text-6xl text-white tracking-tight uppercase">
             Get In Touch
           </h2>
+          <div className="w-20 h-[1px] bg-white/20 mt-6" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-12 items-start">
-          
-          {/* Contact Form Column */}
-          <div ref={formRef} className="md:col-span-3 glassmorphism p-8 rounded-3xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-accentSky/5 rounded-full blur-xl" />
+        {/* Large Premium Glass Card */}
+        <div 
+          ref={cardRef}
+          className="glassmorphism rounded-3xl p-8 md:p-14 relative overflow-hidden border border-white/5 bg-white/[0.01] shadow-2xl"
+        >
+          {/* Card spotlights */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.01] rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/[0.01] rounded-full blur-2xl pointer-events-none" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start relative z-10">
             
-            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-              <div className="space-y-2">
-                <label htmlFor="form-name" className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                  Name
-                </label>
-                <input 
-                  type="text" 
-                  id="form-name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your name"
-                  className="w-full bg-midnight/50 border border-borderDark focus:border-accentSky/50 text-white rounded-xl px-4 py-3.5 outline-none transition-colors duration-300 text-sm"
-                  required
-                />
+            {/* Left Hand: Contact Details */}
+            <div className="lg:col-span-5 space-y-8 flex flex-col justify-between h-full">
+              <div className="space-y-6">
+                
+                {/* Profile circular avatar frame */}
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full overflow-hidden border border-white/10 bg-white/5">
+                    <img 
+                      src={heroImg} 
+                      alt="Dhruva Shirsangi Avatar" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-heading font-bold text-lg text-white">
+                      Dhruva Shirsangi
+                    </h3>
+                    <span className="text-xs text-textSecondary uppercase tracking-widest">
+                      Software & Full Stack Developer
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-xs md:text-sm text-textSecondary leading-relaxed pt-2">
+                  Have an exciting project, open engineering role, or collaboration idea? Reach out directly via the form, or follow my social paths.
+                </p>
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="form-email" className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                  Email Address
-                </label>
-                <input 
-                  type="email" 
-                  id="form-email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className="w-full bg-midnight/50 border border-borderDark focus:border-accentSky/50 text-white rounded-xl px-4 py-3.5 outline-none transition-colors duration-300 text-sm"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="form-message" className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                  Message
-                </label>
-                <textarea 
-                  id="form-message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows="4"
-                  placeholder="Tell me about your project or role..."
-                  className="w-full bg-midnight/50 border border-borderDark focus:border-accentSky/50 text-white rounded-xl px-4 py-3.5 outline-none transition-colors duration-300 text-sm resize-none"
-                  required
-                ></textarea>
-              </div>
-
-              <button 
-                type="submit"
-                id="contact-form-submit"
-                className="w-full py-4 rounded-xl font-semibold bg-white text-midnight hover:bg-accentSky hover:text-white transition-colors duration-300 text-sm shadow-md"
-              >
-                Send Message
-              </button>
-            </form>
-          </div>
-
-          {/* Contact Details Column */}
-          <div ref={infoRef} className="md:col-span-2 space-y-8">
-            
-            {/* Quick statement */}
-            <div className="space-y-3">
-              <h3 className="font-heading font-bold text-xl text-white">
-                Let's talk about projects or roles!
-              </h3>
-              <p className="text-sm text-textSecondary leading-relaxed">
-                I am interested in full-time, part-time, or internship opportunities in software engineering, database scripting, and UI/UX engineering.
-              </p>
-            </div>
-
-            {/* Action Cards */}
-            <div className="space-y-4">
-              
-              {/* Copy Email Button */}
-              <div className="relative group">
+              {/* Action Contact Cards */}
+              <div className="space-y-4 pt-4">
+                
+                {/* Copy Email Action */}
                 <button 
                   onClick={handleCopyEmail}
-                  id="copy-email-btn"
-                  className="w-full glassmorphism p-5 rounded-2xl flex items-center justify-between border-white/5 bg-white/[0.01] hover:border-accentSky/25 transition-all duration-300"
+                  className="magnetic-social w-full glassmorphism px-5 py-4 rounded-2xl flex items-center justify-between border-white/5 bg-white/[0.01] hover:border-white/20 transition-all duration-300 cursor-none"
                 >
-                  <div className="text-left">
-                    <span className="text-[10px] text-textSecondary uppercase block">Email</span>
-                    <span className="text-sm text-white font-medium">druvashirsangi925@gmail.com</span>
+                  <div className="flex items-center gap-3 text-left">
+                    <FiMail className="text-white/60 w-4 h-4" />
+                    <div>
+                      <span className="text-[9px] text-textSecondary uppercase block">Email</span>
+                      <span className="text-xs text-white font-medium">druvashirsangi925@gmail.com</span>
+                    </div>
                   </div>
-                  <span className="text-xs font-semibold text-accentSky bg-accentSky/10 px-2.5 py-1 rounded-full">
-                    {copied ? 'Copied!' : 'Copy'}
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+                    {copied ? 'Copied' : 'Copy'}
                   </span>
                 </button>
+
+                {/* Call Phone Action */}
+                <a 
+                  href="tel:+919353800925" 
+                  className="magnetic-social w-full glassmorphism px-5 py-4 rounded-2xl flex items-center justify-between border-white/5 bg-white/[0.01] hover:border-white/20 transition-all duration-300 cursor-none block"
+                >
+                  <div className="flex items-center gap-3 text-left">
+                    <FiPhone className="text-white/60 w-4 h-4" />
+                    <div>
+                      <span className="text-[9px] text-textSecondary uppercase block">Phone</span>
+                      <span className="text-xs text-white font-medium">+91 9353800925</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+                    Call
+                  </span>
+                </a>
+
+                {/* Get Resume Download Action */}
+                <a 
+                  href="/resume.pdf" 
+                  download
+                  className="magnetic-social w-full glassmorphism px-5 py-4 rounded-2xl flex items-center justify-between border-white/5 bg-white/[0.01] hover:border-white/20 transition-all duration-300 cursor-none block"
+                >
+                  <div className="flex items-center gap-3 text-left">
+                    <FiDownload className="text-white/60 w-4 h-4" />
+                    <div>
+                      <span className="text-[9px] text-textSecondary uppercase block">Resume PDF</span>
+                      <span className="text-xs text-white font-medium">Download Resume</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+                    Fetch
+                  </span>
+                </a>
               </div>
 
-              {/* Call Link */}
-              <a 
-                href="tel:+919353800925" 
-                id="phone-link"
-                className="block glassmorphism p-5 rounded-2xl flex items-center justify-between border-white/5 bg-white/[0.01] hover:border-accentSky/25 transition-all duration-300"
-              >
-                <div>
-                  <span className="text-[10px] text-textSecondary uppercase block">Phone</span>
-                  <span className="text-sm text-white font-medium">+91 9353800925</span>
-                </div>
-                <span className="text-xs font-semibold text-accentSky bg-accentSky/10 px-2.5 py-1 rounded-full">
-                  Call
+              {/* Social Channels Row */}
+              <div className="space-y-3 pt-6 border-t border-white/5">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 block">
+                  Follow Networks
                 </span>
-              </a>
+                <div className="flex gap-3">
+                  <a 
+                    href="https://linkedin.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="magnetic-social w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:text-white hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 cursor-none"
+                    aria-label="LinkedIn"
+                  >
+                    <FiLinkedin size={16} />
+                  </a>
+                  <a 
+                    href="https://github.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="magnetic-social w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:text-white hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 cursor-none"
+                    aria-label="GitHub"
+                  >
+                    <FiGithub size={16} />
+                  </a>
+                  <a 
+                    href="https://instagram.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="magnetic-social w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:text-white hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 cursor-none"
+                    aria-label="Instagram"
+                  >
+                    <FiInstagram size={16} />
+                  </a>
+                </div>
+              </div>
 
             </div>
 
-            {/* Social Links block */}
-            <div className="space-y-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary block">
-                Social Networks
-              </span>
-              <div className="flex gap-3">
-                <a 
-                  href="https://linkedin.com" 
-                  target="_blank" 
-                  rel="noopener" 
-                  id="linkedin-link"
-                  className="px-4 py-2 text-xs font-semibold text-textSecondary border border-borderDark rounded-full hover:border-white hover:text-white transition-colors duration-300"
+            {/* Right Hand: Interactive Form */}
+            <div className="lg:col-span-7 border-t lg:border-t-0 lg:border-l border-white/5 pt-8 lg:pt-0 lg:pl-12">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="form-name" className="text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+                    Your Name
+                  </label>
+                  <input 
+                    type="text" 
+                    id="form-name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your name"
+                    className="w-full bg-white/[0.01] border border-white/10 focus:border-white/30 text-white rounded-2xl px-5 py-4 outline-none transition-all duration-300 text-xs tracking-wide cursor-none"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="form-email" className="text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+                    Email Address
+                  </label>
+                  <input 
+                    type="email" 
+                    id="form-email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email"
+                    className="w-full bg-white/[0.01] border border-white/10 focus:border-white/30 text-white rounded-2xl px-5 py-4 outline-none transition-all duration-300 text-xs tracking-wide cursor-none"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="form-message" className="text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+                    Your Message
+                  </label>
+                  <textarea 
+                    id="form-message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    rows="5"
+                    placeholder="Tell me about your project, goals, or schedule..."
+                    className="w-full bg-white/[0.01] border border-white/10 focus:border-white/30 text-white rounded-2xl px-5 py-4 outline-none transition-all duration-300 text-xs tracking-wide resize-none cursor-none"
+                    required
+                  ></textarea>
+                </div>
+
+                <button 
+                  type="submit"
+                  className="w-full py-4.5 rounded-2xl font-bold bg-white text-midnight hover:bg-white/90 hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-all duration-300 text-xs uppercase tracking-widest cursor-none"
                 >
-                  LinkedIn
-                </a>
-                <a 
-                  href="https://github.com" 
-                  target="_blank" 
-                  rel="noopener" 
-                  id="github-link"
-                  className="px-4 py-2 text-xs font-semibold text-textSecondary border border-borderDark rounded-full hover:border-white hover:text-white transition-colors duration-300"
-                >
-                  GitHub
-                </a>
-              </div>
+                  Send Message
+                </button>
+              </form>
             </div>
 
           </div>
-
         </div>
 
         {/* Footer info */}
-        <footer className="mt-24 border-t border-white/5 pt-8 text-center text-xs text-textSecondary">
-          <p>© 2026 Dhruva I S. Built with React, React Three Fiber & GSAP.</p>
+        <footer className="mt-28 border-t border-white/5 pt-8 text-center">
+          <p className="text-[10px] tracking-widest uppercase text-white/30">
+            © 2026 Dhruva Shirsangi. Built with React + R3F + GSAP + Tailwind CSS.
+          </p>
         </footer>
 
       </div>

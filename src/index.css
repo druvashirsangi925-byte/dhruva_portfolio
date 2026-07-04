@@ -1,67 +1,120 @@
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700,900&f[]=general-sans@300,400,500,600,700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --color-midnight: #030712;
-  --color-cardDark: #0b1021;
-  --color-accentBlue: #3b82f6;
-  --color-accentSky: #38bdf8;
-  --color-textSecondary: #90a3c7;
-  --color-borderDark: #1e293b;
-
-  --font-sans: 'Inter', sans-serif;
+  --color-midnight: #050505;
+  --color-cardDark: #0d0d0d;
+  --color-accent: #ffffff;
+  --color-textSecondary: #a0a0a0;
+  --color-borderDark: #1a1a1a;
+  
+  --font-sans: 'General Sans', sans-serif;
   --font-serif: 'Instrument Serif', serif;
-  --font-heading: 'Bricolage Grotesque', sans-serif;
+  --font-heading: 'Clash Display', sans-serif;
 }
 
 @utility glassmorphism {
-  background: rgba(11, 16, 33, 0.5);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(13, 13, 13, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 @utility glassmorphism-hover {
   &:hover {
-    background: rgba(11, 16, 33, 0.65);
-    border-color: rgba(56, 189, 248, 0.25);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    background: rgba(20, 20, 20, 0.65);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
   }
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
-    background-color: #030712;
+    background-color: #050505;
+    color: #ffffff;
   }
   
   body {
     @apply bg-midnight text-white antialiased overflow-x-hidden font-sans;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
-  
-  .timeline-dot-active::before {
-    box-shadow: 0 0 15px #38bdf8;
+
+  /* Custom Cursor Elements styles */
+  .custom-cursor-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 99999;
+    transition: width 0.2s, height 0.2s, background-color 0.2s;
+  }
+
+  .custom-cursor-ring {
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 99998;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                height 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.3s, 
+                background-color 0.3s;
   }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #030712;
+  background: #050505;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #1a1a1a;
   border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #333333;
+}
+
+/* Noise overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  content: "";
+  opacity: 0.02;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Animated subtle grid overlay */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background-size: 80px 80px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse at center, black, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black, transparent 80%);
 }
 
 /* 3D Perspective Card Layout */
@@ -86,12 +139,6 @@
   transform: translateZ(40px);
 }
 
-/* Timeline vertical line reveal */
-.timeline-line {
-  transform-origin: top;
-  transition: transform 1s ease-out;
-}
-
 /* Infinite Scrolling Marquee */
 @keyframes marquee-left {
   0% { transform: translateX(0); }
@@ -106,11 +153,55 @@
 .animate-marquee-left {
   display: flex;
   width: max-content;
-  animation: marquee-left 32s linear infinite;
+  animation: marquee-left 40s linear infinite;
 }
 
 .animate-marquee-right {
   display: flex;
   width: max-content;
-  animation: marquee-right 32s linear infinite;
+  animation: marquee-right 40s linear infinite;
 }
+
+/* Equalizer animations for Preloader */
+@keyframes eq-scale {
+  0%, 100% { transform: scaleY(0.2); }
+  50% { transform: scaleY(1); }
+}
+
+.eq-bar {
+  animation: eq-scale 1.2s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+/* Magnetic element transitions */
+.magnetic-target {
+  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Floating animated gradient blobs */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.08);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px) scale(1.08);
+  }
+  50% {
+    transform: translateY(30px) scale(1);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 25s ease-in-out infinite;
+}
+
